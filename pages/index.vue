@@ -68,6 +68,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'MainPage',
   data() {
@@ -80,43 +81,49 @@ export default {
     }
   },
   computed: {
-    news() {
+    ...mapState(['news']),
+    sortedNews() {
       if (this.searchResults) return this.sort(this.searchResults)
-      else return this.sort(this.$store.state.news.item)
+      else return this.sort(this.news.item)
     },
     pagesCount() {
-      return Math.ceil(this.news.length / this.paginationSize)
+      return Math.ceil(this.sortedNews.length / this.paginationSize)
     },
     paginatedNews() {
       const start = this.pageNumber * this.paginationSize - this.paginationSize
       const end = start + this.paginationSize
-      return this.news.slice(start, end)
+      return this.sortedNews.slice(start, end)
     },
   },
   methods: {
     sort(arr) {
-      function toMs(dateStr) {
+      const toMs = (dateStr) => {
         const date = new Date(dateStr)
         return date.getTime()
       }
+      const parsedArr = JSON.parse(JSON.stringify(arr))
 
-      const sortedArr = JSON.parse(JSON.stringify(arr)).sort((a, b) => {
+      const sortedArr = parsedArr.sort((a, b) => {
         let result
-        if (this.sortingType === 'older') {
-          if (toMs(a.pubDate[0]) > toMs(b.pubDate[0])) result = 1
-          else result = -1
-        }
-        if (this.sortingType === 'newer') {
-          if (toMs(a.pubDate[0]) < toMs(b.pubDate[0])) result = 1
-          else result = -1
+        switch (this.sortingType) {
+          case 'older':
+            if (toMs(a.pubDate[0]) > toMs(b.pubDate[0])) result = 1
+            else result = -1
+            break
+          case 'newer':
+            if (toMs(a.pubDate[0]) < toMs(b.pubDate[0])) result = 1
+            else result = -1
+            break
+          default:
+            break
         }
         return result
       })
 
       return sortedArr
     },
-    selectSorting(e) {
-      switch (e) {
+    selectSorting(sortType) {
+      switch (sortType) {
         case 'сначала старые':
           this.sortingType = 'older'
           break
@@ -127,10 +134,13 @@ export default {
           break
       }
     },
-    searchNews(e) {
-      if (e) {
-        const results = this.$store.state.news.item.filter((el) => {
-          return el.title.toString().toLowerCase().includes(e.toLowerCase())
+    searchNews(inputVal) {
+      if (inputVal) {
+        const results = this.news.item.filter((el) => {
+          return el.title
+            .toString()
+            .toLowerCase()
+            .includes(inputVal.toLowerCase())
         })
         this.searchResults = results
       } else this.searchResults = null

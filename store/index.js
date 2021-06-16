@@ -1,4 +1,5 @@
 import xml2js from 'xml2js'
+import getNews from '~/api/news.js'
 
 export const state = () => ({
   news: null,
@@ -13,12 +14,16 @@ export const mutations = {
   },
 }
 
+export const getters = {
+  newsItem: (state) => (id) =>
+    state.news.item.find((el) => {
+      return el.guid.toString() === id
+    }),
+}
+
 export const actions = {
   async nuxtServerInit(ctx) {
-    const request = await this.$axios(
-      'http://static.feed.rbc.ru/rbc/logical/footer/news.rss',
-      { mode: 'no-cors' }
-    )
+    const request = await getNews()
     const xmlString = request.data
     const parseString = xml2js.parseString
     parseString(xmlString, (err, result) => {

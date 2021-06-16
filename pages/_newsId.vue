@@ -14,7 +14,12 @@
           :show-arrows="slides.length > 1"
           :hide-delimiters="slides.length < 2"
         >
-          <v-carousel-item v-for="slide in slides" :key="slide" :src="slide" />
+          <v-carousel-item
+            v-for="slide in slides"
+            :key="slide"
+            :src="slide"
+            @click.stop="clickImg"
+          />
         </v-carousel>
       </v-col>
     </v-row>
@@ -44,14 +49,17 @@ export default {
   name: 'NewsItemPage',
   computed: {
     newsItem() {
-      return this.$store.state.news.item.find((el) => {
-        return el.guid.toString() === this.$route.params.newsId
-      })
+      return this.$store.getters.newsItem(this.$route.params.newsId)
     },
     slides() {
       return this.newsItem.enclosure?.map((el) => {
         return el.$.url
       })
+    },
+  },
+  methods: {
+    clickImg() {
+      console.log(1244512)
     },
   },
 }
