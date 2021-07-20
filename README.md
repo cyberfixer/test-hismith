@@ -31,6 +31,7 @@ http://static.feed.rbc.ru/rbc/logical/footer/news.rss.
 6. Визуальная часть на свое усмотрение. Плюсом будет использование
    библиотеки Vuetify или Element.
 
+## https://k-teck.github.io/test-hismith/
 #### по оформлению не заморачивался, т.к. не дизайнер. по макету могу сверстать все что угодно, с библиотеками или без.
 
 ### install dependencies
